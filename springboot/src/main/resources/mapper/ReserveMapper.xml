@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ReserveMapper">
+
+    <sql id="Base_Column_List">
+        id,user_id,teacher_id,start,end,content,status
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Reserve">
+        select reserve.*, user.name as userName, user.phone as userPhone, teacher.name as teacherName
+        from reserve
+        left join user on reserve.user_id = user.id
+        left join teacher on reserve.teacher_id = teacher.id
+        <where>
+            <if test="id != null"> and id= #{id}</if>
+            <if test="userId != null"> and reserve.user_id = #{userId}</if>
+            <if test="teacherId != null"> and reserve.teacher_id = #{teacherId}</if>
+            <if test="userName != null"> and user.name like concat('%', #{userName}, '%')</if>
+            <if test="teacherName != null"> and teacher.name like concat('%', #{teacherName}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Reserve">
+        select
+        <include refid="Base_Column_List" />
+        from reserve
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from reserve
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Reserve" useGeneratedKeys="true">
+        insert into reserve
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="start != null">start,</if>
+            <if test="end != null">end,</if>
+            <if test="content != null">content,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="start != null">#{start},</if>
+            <if test="end != null">#{end},</if>
+            <if test="content != null">#{content},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+    <!--id,user_id,teacher_id,start,end,content-->
+    <update id="updateById" parameterType="com.example.entity.Reserve">
+        update reserve
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="teacherId != null">
+                teacher_id = #{teacherId},
+            </if>
+            <if test="start != null">
+                start = #{start},
+            </if>
+            <if test="end != null">
+                end = #{end},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

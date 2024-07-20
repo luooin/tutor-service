@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.PublishMapper">
+
+    <sql id="Base_Column_List">
+        id,user_id,name,content,time,teacher_id,status
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Publish">
+        select publish.*, user.name as userName, user.phone as userPhone, teacher.name as teacherName, teacher.phone as teacherPhone
+        from publish
+        left join user on publish.user_id = user.id
+        left join teacher on publish.teacher_id = teacher.id
+        <where>
+            <if test="id != null"> and id= #{id}</if>
+            <if test="name != null"> and publish.name like concat('%', #{name}, '%')</if>
+            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="teacherId != null"> and teacher_id = #{teacherId}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Publish">
+        select
+        <include refid="Base_Column_List" />
+        from publish
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from publish
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Publish" useGeneratedKeys="true">
+        insert into publish
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="userId != null">user_id,</if>
+                <if test="content != null">content,</if>
+                <if test="time != null">time,</if>
+                <if test="name != null">name,</if>
+                <if test="teacherId != null">teacher_id,</if>
+                <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id},</if>
+                <if test="userId != null">#{userId},</if>
+                <if test="content != null">#{content},</if>
+                <if test="time != null">#{time},</if>
+                <if test="name != null">#{name},</if>
+                <if test="teacherId != null">#{teacherId},</if>
+                <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+    <!--user_id,name,content,time,teacher_id,status-->
+    <update id="updateById" parameterType="com.example.entity.Publish">
+        update publish
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="teacherId != null">
+                teacher_id = #{teacherId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id} 
+    </update>
+
+</mapper>
